@@ -4,120 +4,77 @@
 
 ![Dashboard Preview](public/screenshots/dashboard.png)
 
-## 🛑 The Problem
-Product Managers are drowning in feedback. Whether it's from sales calls, support tickets, or user forums, the data is unstructured and overwhelming. 
-- **Gut Instinct vs. Data:** prioritization often falls back to "who shouted the loudest?"
-- **Manual Toil:** Maintaining spreadsheets of feature requests is slow and error-prone.
-- **Analysis Paralysis:** With hundreds of ideas, it's impossible to spot the high-impact "low hanging fruit."
-
-## 💡 The Solution
-FeatureFlow-AI is an autonomous agent that acts as your **24/7 Product Strategist**. It intercepts user feedback, understands the context using LLMs, and mathematically scores every request in real-time.
-
-It doesn't just list ideas; it **visualizes your strategy**.
-
-## 🏗️ System Architecture
-
-The system enables a "set it and forget it" pipeline for feature prioritization.
+## 1. The Automated Workflow
+The core of FeatureFlow-AI is a "set it and forget it" pipeline that autonomously processes feedback.
 
 ![n8n Workflow](public/screenshots/n8n_workflow.png)
 
-**The Pipeline:**
-1. **Input:** User submits feedback via Tally Form (or any webhook source).
-2. **Orchestration:** n8n triggers the workflow.
-3. **Reasoning:** Google Gemini (AI) analyzes the text to extract specific feature names and emotional sentiment.
-4. **Scoring:** The AI calculates the **R.I.C.E. Score** (Reach, Impact, Confidence, Effort).
-5. **Storage:** Structured data is pushed to Supabase.
-6. **Visualization:** The Dashboard updates in real-time.
+**How it works:**
+1.  **Ingestion:** The system receives raw user feedback (via Tally Form webhook or API).
+2.  **AI Reasoning:** A **Google Gemini Agent** analyzes the unstructured text to intelligently extract the "Feature Name" and categorize it (e.g., "Feature", "Bug").
+3.  **RICE Scoring:** The agent mathematically calculates a value score based on:
+    *   **Reach:** User impact radius.
+    *   **Impact:** Conversion/Retention value.
+    *   **Confidence:** Clarity of the request.
+    *   **Effort:** Estimated complexity.
+4.  **Storage:** THe structured, scored data is inserted directly into **Supabase**.
 
-## 🧠 Technical Deep Dive: The AI Logic
+## 2. Tech Stack
+*   **Frontend:** React + Vite + Tailwind CSS (Glassmorphism UI)
+*   **Visualization:** Recharts (Scatter Plot Matrix)
+*   **Backend:** Supabase (PostgreSQL)
+*   **Automation:** n8n (Workflow Orchestration)
+*   **AI Model:** Google Gemini Pro (Logic & Scoring)
 
-### 1. The RICE Algorithm
-Every feature is scored against four key metrics to generate a single **Strategy Score**:
-$$ RICE Score = \frac{Reach \times Impact \times Confidence}{Effort} $$
+## 3. Problem Statement
+Product Managers are drowning in unstructured feedback from sources like Slack, Email, and Support tickets.
+*   **The "Gut Feel" Trap:** Without data, prioritization is often based on instinct rather than value.
+*   **Manual Overload:** Organizing hundreds of requests into spreadsheets is slow and error-prone.
+*   **Bad Decisions:** Important features get lost in the noise, leading to inefficient roadmaps.
 
-- **Reach:** How many users will this impact over a given period?
-- **Impact:** How much will this increase conversion/retention? (0.25 - 3.0 scale)
-- **Confidence:** How specific is the request? (50% - 100%)
-- **Effort:** How many "person-months" will this take? (Estimated by AI)
+## 4. The Solution
+FeatureFlow-AI eliminates the noise by autonomously triaging every request.
 
-### 2. Intelligent Extraction
-Raw feedback is messy. The Gemini Agent parses text such as:
-> *"I literally cannot use this app at night, it burns my eyes! Please fix this."*
+### Strategy Matrix (Scatter Plot)
+The dashboard visualizes the **ROI** of your roadmap.
+*   **Value vs. Effort:** Features are plotted to reveal "Quick Wins" (High RICE Score, Low Effort).
+*   **Focus Areas:** Easily identify time sinks (Low Value, High Effort) to avoid.
 
-And extracts structured data:
-- **Feature Name:** "Dark Mode Theme"
-- **Category:** "UX / Accessibility"
-- **Reasoning:** "Critical for user retention and accessibility compliant."
-- **Scores:** assigns high Impact and Confidence based on emotional sentiment.
-
-## ⚡ Key Features
-
-### 🎯 Strategy Matrix (Scatter Plot)
-The dashboard instantly visualizes the **ROI** of every feature.
-- **X-Axis (Effort):** Left is better (easier to build).
-- **Y-Axis (Score):** Top is better (higher impact).
-- **The "Quick Wins" Zone:** Features in the **Top-Left quadrant** are your golden opportunities—high impact, low effort.
-
-### 📋 Interactive Kanban Board
+### Kanban Board
 ![Kanban Board](public/screenshots/kanban.png)
+*   **Lifecycle Management:** visually manage features from **New 📥** to **Planned 🗓️** to **In Progress 🚀**.
+*   **Context Aware:** "New" items are auto-sorted by their AI-generated RICE score.
 
-A drag-and-drop style interface to manage the lifecycle of your features.
-- **Status Lanes:** New 📥 -> Planned 🗓️ -> In Progress 🚀
-- **Live Sync:** Moving a card updates the database instantly via Supabase.
-- **Smart Sorting:** The "New" column automatically prioritizes the highest RICE scores at the top.
+## 5. Database Schema
+Reliable data storage using Postgres via Supabase.
 
-## 🛠️ Setup Instructions
+![Supabase Grid](public/screenshots/supabase_grid.png)
 
-### Prerequisites
-- Node.js (v18+)
-- Supabase Account
-- Google Gemini API Key (for the n8n agent)
+**`feature_requests` Table:**
+| Column | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `int8` | Unique ID |
+| `raw_feedback` | `text` | Original user input |
+| `feature_name` | `text` | AI-extracted title |
+| `final_rice_score` | `float` | Calculated priority score |
+| `effort_score` | `int` | AI-estimated effort (1-10) |
+| `status` | `text` | Lifecycle stage |
 
-### 1. Database Setup
-The application uses a specific schema in Supabase to store scored features.
+## 6. Setup Instructions
 
-![Supabase Database Grid](public/screenshots/supabase_grid.png)
+### Frontend
+1.  **Install Dependencies:**
+    ```bash
+    npm install
+    ```
+2.  **Run Development Server:**
+    ```bash
+    npm run dev
+    ```
 
-Run this SQL in your Supabase SQL Editor:
-
-```sql
-CREATE TABLE feature_requests (
-  id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-  raw_feedback TEXT NOT NULL,
-  feature_name TEXT,
-  category TEXT, 
-  reasoning TEXT,
-  reach_score INT,
-  impact_score FLOAT,
-  confidence_score FLOAT,
-  effort_score INT,
-  final_rice_score FLOAT,
-  status TEXT DEFAULT 'New',
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
-
-### 2. Frontend Setup
-Clone the repo and install dependencies:
-
-```bash
-git clone https://github.com/2007Sachin/Prioritizer-Agent.git
-cd Prioritizer-Agent
-npm install
-```
-
-### 3. Environment Config
-Create a `.env` file in the root directory:
-
+### Environment
+Create a `.env` file with your Supabase credentials:
 ```env
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_SUPABASE_URL=your_project_url
+VITE_SUPABASE_ANON_KEY=your_anon_key
 ```
-
-### 4. Run Locally
-```bash
-npm run dev
-```
-
----
-*Built with ❤️ using React, Tailwind, Recharts, n8n and Supabase.*
