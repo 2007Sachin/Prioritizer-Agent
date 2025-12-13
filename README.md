@@ -2,7 +2,7 @@
 
 > **An automated roadmap engine that turns raw user feedback into a prioritized strategy using AI-driven RICE scoring.**
 
-![Dashboard Preview](https://github.com/user-attachments/assets/placeholder-dashboard)
+![Dashboard Preview](public/screenshots/dashboard.png)
 
 ## 🛑 The Problem
 Product Managers are drowning in feedback. Whether it's from sales calls, support tickets, or user forums, the data is unstructured and overwhelming. 
@@ -64,6 +64,7 @@ The dashboard instantly visualizes the **ROI** of every feature.
 - **The "Quick Wins" Zone:** Features in the **Top-Left quadrant** are your golden opportunities—high impact, low effort.
 
 ### 📋 Interactive Kanban Board
+![Kanban Board](public/screenshots/kanban.png)
 A drag-and-drop style interface to manage the lifecycle of your features.
 - **Status Lanes:** New 📥 -> Planned 🗓️ -> In Progress 🚀
 - **Live Sync:** Moving a card updates the database instantly via Supabase.
