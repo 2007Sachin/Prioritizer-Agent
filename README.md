@@ -19,20 +19,15 @@ It doesn't just list ideas; it **visualizes your strategy**.
 
 The system enables a "set it and forget it" pipeline for feature prioritization.
 
-```mermaid
-graph LR
-    A[📝 Tally Form] -->|Raw Feedback| B(n8n Webhook)
-    B -->|Process Input| C{Gemini Agent}
-    C -->|Analyze Context| C
-    C -->|Calculate R.I.C.E.| D[(Supabase DB)]
-    D -->|Real-time Sync| E[React Dashboard]
-    
-    style A fill:#f9f,stroke:#333
-    style B fill:#f96,stroke:#333
-    style C fill:#4285f4,stroke:#fff,color:#fff
-    style D fill:#3ecf8e,stroke:#333
-    style E fill:#61dafb,stroke:#333,stroke-width:2px
-```
+![n8n Workflow](public/screenshots/n8n_workflow.png)
+
+**The Pipeline:**
+1. **Input:** User submits feedback via Tally Form (or any webhook source).
+2. **Orchestration:** n8n triggers the workflow.
+3. **Reasoning:** Google Gemini (AI) analyzes the text to extract specific feature names and emotional sentiment.
+4. **Scoring:** The AI calculates the **R.I.C.E. Score** (Reach, Impact, Confidence, Effort).
+5. **Storage:** Structured data is pushed to Supabase.
+6. **Visualization:** The Dashboard updates in real-time.
 
 ## 🧠 Technical Deep Dive: The AI Logic
 
@@ -65,13 +60,11 @@ The dashboard instantly visualizes the **ROI** of every feature.
 
 ### 📋 Interactive Kanban Board
 ![Kanban Board](public/screenshots/kanban.png)
+
 A drag-and-drop style interface to manage the lifecycle of your features.
 - **Status Lanes:** New 📥 -> Planned 🗓️ -> In Progress 🚀
 - **Live Sync:** Moving a card updates the database instantly via Supabase.
 - **Smart Sorting:** The "New" column automatically prioritizes the highest RICE scores at the top.
-
-### 🎨 Premium Glassmorphism UI
-Built with **React + Tailwind CSS** (Slate-950 theme). Features real-time responsive charts (`recharts`), dynamic "pill" badges, and a "breathing" dark mode aesthetic.
 
 ## 🛠️ Setup Instructions
 
@@ -81,7 +74,11 @@ Built with **React + Tailwind CSS** (Slate-950 theme). Features real-time respon
 - Google Gemini API Key (for the n8n agent)
 
 ### 1. Database Setup
-Run this SQL in your Supabase SQL Editor to create the schema:
+The application uses a specific schema in Supabase to store scored features.
+
+![Supabase Database Grid](public/screenshots/supabase_grid.png)
+
+Run this SQL in your Supabase SQL Editor:
 
 ```sql
 CREATE TABLE feature_requests (
@@ -123,4 +120,4 @@ npm run dev
 ```
 
 ---
-*Built with ❤️ using React, Tailwind, Recharts, and Supabase.*
+*Built with ❤️ using React, Tailwind, Recharts, n8n and Supabase.*
