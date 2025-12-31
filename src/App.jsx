@@ -18,7 +18,7 @@ import {
   Loader2,
   Sparkles
 } from 'lucide-react';
-import { supabase } from './supabaseClient';
+import { MOCK_FEATURES } from './mockData';
 import './App.css';
 
 // Status configuration
@@ -86,8 +86,8 @@ const FeatureCard = ({ feature, onMoveLeft, onMoveRight, canMoveLeft, canMoveRig
           onClick={() => onMoveLeft(feature)}
           disabled={!canMoveLeft || isUpdating}
           className={`p-2 rounded-lg transition-colors ${!canMoveLeft
-              ? 'text-slate-700 cursor-not-allowed'
-              : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+            ? 'text-slate-700 cursor-not-allowed'
+            : 'text-slate-400 hover:bg-slate-800 hover:text-white'
             }`}
           title="Move Left"
         >
@@ -100,8 +100,8 @@ const FeatureCard = ({ feature, onMoveLeft, onMoveRight, canMoveLeft, canMoveRig
           onClick={() => onMoveRight(feature)}
           disabled={!canMoveRight || isUpdating}
           className={`p-2 rounded-lg transition-colors ${!canMoveRight
-              ? 'text-slate-700 cursor-not-allowed'
-              : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+            ? 'text-slate-700 cursor-not-allowed'
+            : 'text-slate-400 hover:bg-slate-800 hover:text-white'
             }`}
           title="Move Right"
         >
@@ -167,16 +167,14 @@ function App() {
   const [error, setError] = useState(null);
   const [updatingIds, setUpdatingIds] = useState([]);
 
-  // Fetch features from Supabase
+  // Fetch features (Mocked to bypass Supabase setup)
   const fetchFeatures = async () => {
     try {
-      const { data, error } = await supabase
-        .from('feature_requests')
-        .select('*')
-        .order('final_rice_score', { ascending: false });
-
-      if (error) throw error;
-      setFeatures(data || []);
+      setLoading(true);
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      setFeatures(MOCK_FEATURES);
+      setError(null);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -188,17 +186,13 @@ function App() {
     fetchFeatures();
   }, []);
 
-  // Move feature to a new status
+  // Move feature to a new status (Mocked)
   const handleMoveFeature = async (featureId, newStatus) => {
     setUpdatingIds((prev) => [...prev, featureId]);
 
     try {
-      const { error } = await supabase
-        .from('feature_requests')
-        .update({ status: newStatus })
-        .eq('id', featureId);
-
-      if (error) throw error;
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 600));
 
       // Update local state immediately
       setFeatures((prev) =>
